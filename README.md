@@ -43,6 +43,15 @@ Use `localhost` (not `127.0.0.1`) because Appwrite routes by configured domain.
 ## Railway deployment (manual for now)
 Follow `railway/DEPLOYMENT.md` to map each service and variables.
 
+### If you see `railpack process exited with an error`
+This usually means Railway tried Railpack instead of Dockerfile build.
+
+Fix:
+1. Ensure each service uses its own source directory:
+`services/appwrite`, `services/mariadb`, `services/redis`.
+2. In each service, set build method to Dockerfile (or keep `services/*/railway.json` in repo, which enforces it).
+3. Trigger redeploy with clear build cache.
+
 ## Template manifest
 Use one of these files:
 - `railway-template.json` (default variant)
