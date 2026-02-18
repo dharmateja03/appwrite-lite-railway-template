@@ -1,0 +1,85 @@
+name: appwrite-lite-template
+
+services:
+  appwrite:
+    image: appwrite/appwrite:${APPWRITE_VERSION:-1.8.0}
+    restart: unless-stopped
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+    environment:
+      _APP_ENV: ${_APP_ENV}
+      _APP_OPENSSL_KEY_V1: ${_APP_OPENSSL_KEY_V1}
+      _APP_DOMAIN: ${_APP_DOMAIN}
+      _APP_DOMAIN_TARGET_CNAME: ${_APP_DOMAIN_TARGET_CNAME}
+      _APP_SYSTEM_EMAIL_NAME: ${_APP_SYSTEM_EMAIL_NAME}
+      _APP_SYSTEM_EMAIL_ADDRESS: ${_APP_SYSTEM_EMAIL_ADDRESS}
+      _APP_SYSTEM_SECURITY_EMAIL_ADDRESS: ${_APP_SYSTEM_SECURITY_EMAIL_ADDRESS}
+      _APP_OPTIONS_ROUTER_FORCE_HTTPS: ${_APP_OPTIONS_ROUTER_FORCE_HTTPS}
+      _APP_OPTIONS_ABUSE: ${_APP_OPTIONS_ABUSE}
+      _APP_USAGE_STATS: ${_APP_USAGE_STATS}
+      _APP_STORAGE_ANTIVIRUS: ${_APP_STORAGE_ANTIVIRUS}
+      _APP_STORAGE_DEVICE: ${_APP_STORAGE_DEVICE}
+      _APP_DB_HOST: ${_APP_DB_HOST}
+      _APP_DB_PORT: ${_APP_DB_PORT}
+      _APP_DB_SCHEMA: ${_APP_DB_SCHEMA}
+      _APP_DB_USER: ${_APP_DB_USER}
+      _APP_DB_PASS: ${_APP_DB_PASS}
+      _APP_DB_ROOT_PASS: ${_APP_DB_ROOT_PASS}
+      _APP_REDIS_HOST: ${_APP_REDIS_HOST}
+      _APP_REDIS_PORT: ${_APP_REDIS_PORT}
+      _APP_DOMAIN_FUNCTIONS: ${_APP_DOMAIN_FUNCTIONS}
+      _APP_DOMAIN_SITES: ${_APP_DOMAIN_SITES}
+      _APP_FUNCTIONS_RUNTIMES: ${_APP_FUNCTIONS_RUNTIMES}
+    volumes:
+      - appwrite-uploads:/storage/uploads:rw
+      - appwrite-cache:/storage/cache:rw
+      - appwrite-config:/storage/config:rw
+      - appwrite-certificates:/storage/certificates:rw
+      - appwrite-functions:/storage/functions:rw
+      - appwrite-sites:/storage/sites:rw
+
+  mariadb:
+    image: mariadb:${MARIADB_VERSION:-11.4}
+    restart: unless-stopped
+    command:
+      - --innodb-flush-method=fsync
+      - --log-bin-trust-function-creators=1
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${_APP_DB_SCHEMA}
+      MYSQL_USER: ${_APP_DB_USER}
+      MYSQL_PASSWORD: ${_APP_DB_PASS}
+    volumes:
+      - mariadb-data:/var/lib/mysql:rw
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:${REDIS_VERSION:-7.2-alpine}
+    restart: unless-stopped
+    command: ["redis-server", "--save", "60", "1000"]
+    volumes:
+      - redis-data:/data:rw
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  appwrite-uploads:
+  appwrite-cache:
+  appwrite-config:
+  appwrite-certificates:
+  appwrite-functions:
+  appwrite-sites:
+  mariadb-data:
+  redis-data:

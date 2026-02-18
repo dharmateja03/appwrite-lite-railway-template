@@ -1,0 +1,2 @@
+ARG APPWRITE_VERSION=1.8.0
+FROM appwrite/appwrite:${APPWRITE_VERSION}

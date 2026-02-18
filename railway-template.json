@@ -1,0 +1,105 @@
+{
+  "name": "Appwrite Lite",
+  "description": "Lightweight self-hosted Appwrite stack for Railway with 3 services (appwrite, mariadb, redis).",
+  "icon": "database",
+  "tags": [
+    "appwrite",
+    "backend",
+    "database",
+    "mariadb",
+    "redis",
+    "self-hosted"
+  ],
+  "services": [
+    {
+      "name": "appwrite",
+      "source": {
+        "directory": "services/appwrite"
+      },
+      "env": {
+        "_APP_ENV": "production",
+        "_APP_OPENSSL_KEY_V1": "${{shared.APPWRITE_OPENSSL_KEY_V1}}",
+        "_APP_DOMAIN": "${{appwrite.RAILWAY_PUBLIC_DOMAIN}}",
+        "_APP_DOMAIN_TARGET_CNAME": "${{appwrite.RAILWAY_PUBLIC_DOMAIN}}",
+        "_APP_SYSTEM_EMAIL_NAME": "Appwrite",
+        "_APP_SYSTEM_EMAIL_ADDRESS": "${{shared.SYSTEM_EMAIL_ADDRESS}}",
+        "_APP_SYSTEM_SECURITY_EMAIL_ADDRESS": "${{shared.SYSTEM_SECURITY_EMAIL_ADDRESS}}",
+        "_APP_OPTIONS_ROUTER_FORCE_HTTPS": "enabled",
+        "_APP_OPTIONS_ABUSE": "enabled",
+        "_APP_USAGE_STATS": "disabled",
+        "_APP_STORAGE_ANTIVIRUS": "disabled",
+        "_APP_STORAGE_DEVICE": "local",
+        "_APP_DB_HOST": "${{mariadb.RAILWAY_PRIVATE_DOMAIN}}",
+        "_APP_DB_PORT": "3306",
+        "_APP_DB_SCHEMA": "appwrite",
+        "_APP_DB_USER": "appwrite",
+        "_APP_DB_PASS": "${{shared.MYSQL_PASSWORD}}",
+        "_APP_DB_ROOT_PASS": "${{shared.MYSQL_ROOT_PASSWORD}}",
+        "_APP_REDIS_HOST": "${{redis.RAILWAY_PRIVATE_DOMAIN}}",
+        "_APP_REDIS_PORT": "6379",
+        "_APP_DOMAIN_FUNCTIONS": "",
+        "_APP_DOMAIN_SITES": "",
+        "_APP_FUNCTIONS_RUNTIMES": ""
+      },
+      "volumes": [
+        {
+          "mountPath": "/storage"
+        }
+      ]
+    },
+    {
+      "name": "mariadb",
+      "source": {
+        "directory": "services/mariadb"
+      },
+      "env": {
+        "MYSQL_ROOT_PASSWORD": "${{shared.MYSQL_ROOT_PASSWORD}}",
+        "MYSQL_DATABASE": "appwrite",
+        "MYSQL_USER": "appwrite",
+        "MYSQL_PASSWORD": "${{shared.MYSQL_PASSWORD}}"
+      },
+      "volumes": [
+        {
+          "mountPath": "/var/lib/mysql"
+        }
+      ]
+    },
+    {
+      "name": "redis",
+      "source": {
+        "directory": "services/redis"
+      },
+      "volumes": [
+        {
+          "mountPath": "/data"
+        }
+      ]
+    }
+  ],
+  "sharedVariables": {
+    "APPWRITE_OPENSSL_KEY_V1": {
+      "description": "Appwrite encryption key. Keep this stable after first deploy.",
+      "generate": true
+    },
+    "MYSQL_ROOT_PASSWORD": {
+      "description": "MariaDB root password used by Appwrite for setup tasks.",
+      "generate": true
+    },
+    "MYSQL_PASSWORD": {
+      "description": "MariaDB app user password for Appwrite.",
+      "generate": true
+    },
+    "SYSTEM_EMAIL_ADDRESS": {
+      "description": "Default system email sender address.",
+      "default": "team@example.com"
+    },
+    "SYSTEM_SECURITY_EMAIL_ADDRESS": {
+      "description": "Security contact email address.",
+      "default": "security@example.com"
+    }
+  },
+  "instructions": {
+    "start": "Deploying Appwrite Lite (appwrite + mariadb + redis). Initial startup can take a few minutes while Appwrite initializes schema.",
+    "end": "Deployment complete. Open your appwrite service URL and finish Appwrite setup. Use a custom domain for production and keep shared secrets unchanged."
+  }
+}
