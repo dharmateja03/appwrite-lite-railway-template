@@ -1,5 +1,7 @@
 # Appwrite Lite Template (Railway Starter)
 
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/VUk50m?referralCode=Bre1IO&utm_medium=integration&utm_source=template&utm_campaign=generic)
+
 This directory is a starting point for a low-footprint Appwrite template on Railway.
 
 Scope of this first version:
