@@ -52,7 +52,25 @@ Fix:
 2. In each service, set build method to Dockerfile (or keep `services/*/railway.json` in repo, which enforces it).
 3. Trigger redeploy with clear build cache.
 
-## Template manifest
+## GitHub + Template Publishing
+Railway templates are published from Railway UI, using a public GitHub repo as the source.
+
+Recommended repo setup:
+1. Keep this project at repo root (so `services/appwrite`, `services/mariadb`, and `services/redis` paths are valid).
+2. Keep `services/*/railway.json` committed so Railway uses Dockerfile builds instead of Railpack.
+3. Keep the repo public.
+
+Publish flow:
+1. Deploy the 3 services in Railway from this repo.
+2. Verify health (`/v1/health/version` returns JSON).
+3. In Railway project settings, use `Generate Template from Project`.
+4. Submit via the Templates publish flow.
+
+References:
+- https://github.com/railwayapp/templates
+- https://docs.railway.app/reference/templates
+
+## Template manifest (optional helper)
 Use one of these files:
 - `railway-template.json` (default variant)
 - `railway-template.schema.json` (explicit `$schema` variant)
